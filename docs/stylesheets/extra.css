@@ -1,0 +1,56 @@
+/* Potos theme: green primary, purple accent. */
+
+:root,
+[data-md-color-scheme="default"] {
+  /* Primary (header, nav highlights) — brand green. */
+  --md-primary-fg-color:        #3eaf7c;
+  --md-primary-fg-color--light: #4abf8a;
+  --md-primary-fg-color--dark:  #349469;
+  --md-primary-bg-color:        #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+
+  /* Accent (links on hover, focus rings, selection) — Potos purple. */
+  --md-accent-fg-color:             #7c3aed;
+  --md-accent-fg-color--transparent: rgba(124, 58, 237, 0.1);
+
+  /* Links resting state — brand green; slate body text like the site. */
+  --md-typeset-a-color: #3aa675;
+  --md-typeset-color:   #2c3e50;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #3eaf7c;
+  --md-primary-fg-color--light: #4abf8a;
+  --md-primary-fg-color--dark:  #2f8862;
+  --md-primary-bg-color:        #ffffff;
+
+  --md-accent-fg-color:             #a78bfa;
+  --md-accent-fg-color--transparent: rgba(167, 139, 250, 0.1);
+
+  --md-typeset-a-color: #4abf8a;
+}
+
+/* A purple underline grows under links on hover, tying the two brand colors
+   together without recoloring the resting link. */
+.md-typeset a {
+  text-decoration: none;
+  background-image: linear-gradient(var(--md-accent-fg-color), var(--md-accent-fg-color));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 2px;
+  transition: background-size 0.2s ease, color 0.2s ease;
+}
+
+.md-typeset a:hover {
+  color: var(--md-accent-fg-color);
+  background-size: 100% 2px;
+}
+
+/* Keep nav/header links (already on a colored or chromeless surface) free of
+   the underline treatment. */
+.md-header a,
+.md-nav a,
+.md-tabs a,
+.md-typeset .md-button {
+  background-image: none;
+}
