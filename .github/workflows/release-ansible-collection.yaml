@@ -3,19 +3,6 @@ name: Release Ansible Collection
 
 on:
   workflow_call:
-    inputs:
-      version:
-        description: >-
-          Version to release (without leading v). Empty = derive from the
-          pushed tag name.
-        type: string
-        required: false
-        default: ""
-      release-branch:
-        description: Branch to push the release commit back to.
-        type: string
-        required: false
-        default: main
     secrets:
       ANSIBLE_GALAXY_API_KEY:
         description: API key used to publish the collection on Ansible Galaxy.
@@ -30,48 +17,31 @@ jobs:
     timeout-minutes: 15
     environment: release
     permissions:
-      contents: write # push the release commit back to the repository
+      contents: read # publishing needs no write access to the repository
     steps:
       - name: Checkout
-        # persist-credentials is needed to push the release commit back.
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          persist-credentials: true
-          fetch-depth: 0
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: false
 
-      - name: Resolve release version
+      - name: Verify the tag matches the galaxy.yml version
         id: version
-        env:
-          INPUTS_VERSION: ${{ inputs.version }}
         run: |
-          if [ -n "${INPUTS_VERSION}" ]; then
-            VERSION="${INPUTS_VERSION}"
-          else
-            VERSION="${GITHUB_REF_NAME#v}"
-          fi
-          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+'; then
-            echo "::error::'$VERSION' is not a valid semantic version" >&2
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          GALAXY_VERSION="$(sed -nE 's/^version: *"?([0-9][^" ]*)"?.*/\1/p' galaxy.yml)"
+          if [ "${TAG_VERSION}" != "${GALAXY_VERSION}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match galaxy.yml version '${GALAXY_VERSION}'; merge the release PR before tagging" >&2
             exit 1
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Releasing version $VERSION"
-
-      - name: Set galaxy.yml version
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          sed -i -E "s/^version:.*/version: ${VERSION}/" galaxy.yml
-          grep -E '^version:' galaxy.yml
-
-      - name: Regenerate changelog for the release
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: uv run --frozen antsibull-changelog release --version "${VERSION}"
+          NAMESPACE="$(sed -nE 's/^namespace: *"?([^" ]*)"?.*/\1/p' galaxy.yml)"
+          NAME="$(sed -nE 's/^name: *"?([^" ]*)"?.*/\1/p' galaxy.yml)"
+          echo "version=${TAG_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${NAMESPACE}-${NAME}-${TAG_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Build the collection
         run: uv run --frozen ansible-galaxy collection build --force --output-path dist
@@ -88,21 +58,9 @@ jobs:
           uv run --frozen ansible-galaxy collection publish "${TARBALL}" \
             --api-key "${ANSIBLE_GALAXY_API_KEY}"
 
-      - name: Commit the changes back to the repository
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-          RELEASE_BRANCH: ${{ inputs.release-branch }}
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-          git add galaxy.yml CHANGELOG.md changelogs/fragments/
-          git commit -m "Release version ${VERSION}" || echo "No changes to commit"
-          git push origin "HEAD:${RELEASE_BRANCH}" || echo "No changes to push"
-
       - name: Upload built collection artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.artifact }}
           path: dist/*.tar.gz
           if-no-files-found: error

@@ -1,15 +1,19 @@
 # Ansible Collections: Release
 
-Releases an Ansible collection to [Ansible Galaxy](https://galaxy.ansible.com/): resolves
-the version from the pushed tag (or a manual input), bumps `galaxy.yml`, regenerates the
-changelog with `antsibull-changelog`, builds and publishes the collection, commits the
-release changes back to the repository, and uploads the tarball as a workflow artifact.
+Publishes an Ansible collection to [Ansible Galaxy](https://galaxy.ansible.com/) when a
+version tag is pushed. The workflow is for **publishing only**: it verifies that the tag matches
+the `galaxy.yml` version, builds the collection, publishes it, and uploads the tarball as a
+workflow artifact. It needs no write access to the repository.
+
+The version bump and changelog must be adjusted before calling this workflow.
+
+If the tag does not match `galaxy.yml` on the tagged commit, the workflow fails before publishing anything.
 
 ## Usage
 
 Create a `.github/workflows/release.yaml` file. The repository needs a `release`
 [environment](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment)
-with the `ANSIBLE_GALAXY_API_KEY` secret:
+with the `ANSIBLE_GALAXY_API_KEY` secret.
 
 ```yaml title=".github/workflows/release.yaml"
 ---
@@ -18,12 +22,6 @@ name: Release
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to release (without leading v), e.g. 1.2.3"
-        required: true
-        type: string
 
 permissions: {} # (1)
 
@@ -34,24 +32,19 @@ concurrency:
 jobs:
   release:
     permissions:
-      contents: write # (2)
+      contents: read # (2)
     uses: projectpotos/actions/.github/workflows/release-ansible-collection.yaml@v0.0.0
-    with:
-      version: ${{ inputs.version }} # (3)
     secrets:
       ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
 ```
 
 1. Deny all permissions at the workflow level as a secure baseline.
-2. Required to push the release commit (galaxy.yml + changelog) back to the repository.
-3. Empty on tag pushes — the version is then derived from the tag name.
+2. Publishing needs no write access — the version bump should land via a release PR.
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|---|---|---|---|
-| `version` | Version to release, without leading `v` (empty = derive from the pushed tag) | No | `""` |
-| `release-branch` | Branch to push the release commit back to | No | `main` |
+None — the version is derived from the pushed tag and verified against `galaxy.yml`; the
+artifact name is derived from the collection's namespace and name in `galaxy.yml`.
 
 ## Secrets
 

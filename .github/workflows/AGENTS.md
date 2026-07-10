@@ -95,11 +95,9 @@ jobs:
   directly into `run:` blocks.
 - Use `if: github.event_name != 'pull_request'` guards (or boolean inputs like `deploy`,
   `dry`) before any step that pushes, signs, publishes, or deploys.
-- `persist-credentials: false` on every checkout. The single exception is
-  `release-ansible-collection.yaml`, which pushes a release commit back; the corresponding
-  zizmor suppression lives in `.github/zizmor.yml` with the reason documented.
-- Run `uvx zizmor --persona pedantic .` — it must be clean (suppressions only via
-  `.github/zizmor.yml` with a documented reason).
+- `persist-credentials: false` on every checkout
+- Run `uvx zizmor --persona pedantic .` — it must be clean (suppressions only via a
+  `.github/zizmor.yml` with a documented reason; currently none are needed).
 
 ## Adding a New Workflow
 

@@ -78,7 +78,7 @@ All work happens on feature branches. Open a PR to `main`; do not manually creat
 
 | File | Purpose |
 |---|---|
-| `release-ansible-collection.yaml` | Version, build, and publish Ansible collections to Galaxy |
+| `release-ansible-collection.yaml` | Publish Galaxy release |
 | `release-container.yaml` | Build, push, and attest container images (GHCR by default) |
 | `release-zensical.yaml` | Build and deploy Zensical docs to GitHub Pages (also deploys this repo's docs) |
 | `semantic-release.yaml` | Automate releases with go-semantic-release (also releases this repo) |
@@ -146,8 +146,8 @@ Workflows **not** smoke-tested and why:
   operate on the repository root and provide no `path` input, so they cannot be pointed at a
   fixture. Validated in the consuming collection repositories.
 - `release-ansible-collection.yaml` — requires a locked uv project and `galaxy.yml` at the
-  repository root, plus the `release` environment. Validated in the consuming collection
-  repositories.
+  repository root, plus a matching version tag and the `release` environment. Validated in
+  the consuming collection repositories.
 
 ### Making workflows smoke-testable
 

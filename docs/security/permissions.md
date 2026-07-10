@@ -23,7 +23,7 @@ a called workflow are **no more** than what the calling job grants.
 
 | Reusable Workflow | Required `permissions` |
 |---|---|
-| `release-ansible-collection.yaml` | `contents: write` (pushes the release commit back) |
+| `release-ansible-collection.yaml` | `contents: read` |
 | `release-container.yaml` | `contents: read`, `packages: write`, `id-token: write`, `attestations: write` |
 | `release-zensical.yaml` | `contents: read`, `pages: write`, `id-token: write` |
 | `semantic-release.yaml` | `contents: write` (creates tags and releases) |
