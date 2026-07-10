@@ -100,6 +100,10 @@ These reusable workflows are free software: you can redistribute them and/or mod
 under the terms of the GNU General Public License as published by the Free Software
 Foundation, version 3 of the License, or (at your option) any later version.
 
+## Credits
+
+Thx u RaBe for doing the heavy lifting :)
+
 ## Copyright
 
 Copyright (c) 2026 [Project Potos](https://potos.dev)
