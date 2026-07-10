@@ -5,7 +5,7 @@ description: >-
 
 inputs:
   needs:
-    description: "The needs context of the aggregating job: ${{ toJSON(needs) }}."
+    description: "The aggregating job's needs context, passed as JSON via toJSON(needs)."
     required: true
 
 runs:
