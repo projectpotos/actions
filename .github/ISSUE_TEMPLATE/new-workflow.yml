@@ -1,0 +1,88 @@
+---
+name: New Workflow
+description: Propose a new reusable workflow to be added to this library
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to propose a new reusable workflow.
+        See the [Contributing guide](https://projectpotos.github.io/actions/contributing/) for the full workflow lifecycle.
+
+  - type: input
+    id: name
+    attributes:
+      label: Proposed Workflow Name
+      description: Follow the `<verb>-<subject>` naming convention (e.g. `test-go-modules`, `release-helm-chart`).
+      placeholder: verb-subject
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Which category does the workflow belong to?
+      options:
+        - Ansible Collections
+        - Container Images
+        - Lint
+        - Documentation
+        - Semantic Release
+        - New Category (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: What does this workflow do? What problem does it solve? Why should it live in this shared library?
+    validations:
+      required: true
+
+  - type: textarea
+    id: tools
+    attributes:
+      label: Tools and Actions Used
+      description: List the tools, GitHub Actions, and external services this workflow depends on.
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Caller Workflow
+      description: |
+        Show how downstream repositories would use this workflow.
+        Remember to include `permissions: {}` at the top level and per-job permissions.
+      render: yaml
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-Submission Checklist
+      options:
+        - label: I have checked that no existing workflow covers this use case
+          required: true
+        - label: This workflow would be useful to more than one potos project
+          required: true
+
+  - type: checkboxes
+    id: security-checklist
+    attributes:
+      label: Security Review
+      description: |
+        Review the [action selection criteria](https://projectpotos.github.io/actions/security/supply-chain/#action-selection-criteria)
+        before adding any new third-party action.
+      options:
+        - label: All proposed third-party actions are published by a verified or well-known organisation
+          required: true
+        - label: All proposed third-party actions have been checked for known vulnerabilities (GitHub Advisory Database, OSV.dev)
+          required: true
+        - label: All proposed third-party actions will be pinned to a full commit SHA (`@<sha> # vN.N.N`)
+          required: true
+        - label: The example caller workflow includes empty `permissions:` at the workflow level with explicit per-job permissions
+          required: true
+        - label: The minimum required permissions have been declared and are no broader than necessary
+          required: true
+        - label: The consuming repositories' `allowed_actions` (tofu repo config) have been checked for the new actions
+          required: true

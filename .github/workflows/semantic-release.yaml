@@ -1,0 +1,40 @@
+---
+name: Semantic Release
+
+on:
+  push:
+    branches: [main]
+  workflow_call:
+    inputs:
+      dry:
+        description: Run in dry-run mode (determine the next version without creating a release).
+        type: boolean
+        required: false
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: semantic-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # create tags and GitHub releases
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run go-semantic-release
+        uses: go-semantic-release/action@2e9dc4247a6004f8377781bef4cb9dad273a741f # v1.24.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          allow-initial-development-versions: true
+          dry: ${{ inputs.dry || false }}

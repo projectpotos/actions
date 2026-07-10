@@ -1,0 +1,45 @@
+---
+name: Smoke Test Release Workflows
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# Release workflows require elevated permissions. Separated from
+# smoke-test.yaml to make the elevated grants explicit and auditable.
+# On pull_request events the push/attest/deploy steps are gated off inside
+# the called workflows, and GitHub additionally restricts write permissions
+# for fork PRs.
+
+concurrency:
+  group: smoke-test-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-release-container:
+    permissions:
+      contents: read
+      packages: write # declared by release-container.yaml for pushing to GHCR (gated on non-PR events)
+      id-token: write # declared by release-container.yaml for keyless provenance signing (gated on non-PR events)
+      attestations: write # declared by release-container.yaml for the provenance attestation (gated on non-PR events)
+    uses: ./.github/workflows/release-container.yaml
+    with:
+      context: tests/container
+      tags: |
+        type=raw,value=smoke-test
+      labels: |
+        org.opencontainers.image.title=actions-smoke-test
+
+  smoke-release-zensical:
+    permissions:
+      contents: read
+      # The caller must grant everything the called workflow's jobs declare,
+      # even though the deploy job is skipped via deploy: false.
+      pages: write # declared by release-zensical.yaml for the Pages deployment (skipped here)
+      id-token: write # declared by release-zensical.yaml for the Pages OIDC auth (skipped here)
+    uses: ./.github/workflows/release-zensical.yaml
+    with:
+      deploy: false

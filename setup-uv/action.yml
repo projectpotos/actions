@@ -1,0 +1,34 @@
+---
+name: Setup uv project
+description: >-
+  Check out the repository and install uv, ready to run project tooling
+  (pytest, molecule, antsibull-changelog, ...).
+
+inputs:
+  python-version:
+    description: Python version to install (empty = project default).
+    required: false
+    default: ""
+  enable-cache:
+    description: Enable the uv cache.
+    required: false
+    default: "true"
+  fetch-depth:
+    description: Number of commits to fetch (0 = full history).
+    required: false
+    default: "1"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+      with:
+        persist-credentials: false
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+      with:
+        enable-cache: ${{ inputs.enable-cache }}
+        python-version: ${{ inputs.python-version }}

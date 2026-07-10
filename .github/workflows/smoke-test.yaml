@@ -1,0 +1,55 @@
+---
+name: Smoke Test Workflows
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# Smoke tests whose side effects are fully disabled via inputs.
+# Container/Pages release smoke tests live in smoke-test-release.yaml.
+
+concurrency:
+  group: smoke-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-test-lint:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test-lint.yaml
+    with:
+      yamllint-mode: standalone
+      zizmor-persona: pedantic
+
+  smoke-semantic-release:
+    permissions:
+      # The caller must grant what the called workflow's job declares;
+      # the dry run only computes the next version and creates nothing.
+      contents: write # declared by semantic-release.yaml for creating tags/releases (dry here)
+    uses: ./.github/workflows/semantic-release.yaml
+    with:
+      dry: true
+
+  all_green:
+    name: all_green
+    if: ${{ always() }}
+    needs:
+      - smoke-test-lint
+      - smoke-semantic-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Verify no required job failed or was cancelled
+        uses: ./all-green
+        with:
+          needs: ${{ toJSON(needs) }}

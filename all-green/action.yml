@@ -1,0 +1,25 @@
+---
+name: All green
+description: >-
+  Verify that no required job failed or was cancelled.
+
+inputs:
+  needs:
+    description: "The needs context of the aggregating job: ${{ toJSON(needs) }}."
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Verify no required job failed or was cancelled
+      shell: bash
+      env:
+        NEEDS_JSON: ${{ inputs.needs }}
+      run: |
+        echo "Job results:"
+        echo "${NEEDS_JSON}" | jq -r 'to_entries[] | "  \(.key): \(.value.result)"'
+        if echo "${NEEDS_JSON}" | jq -e \
+          '[.[].result] | any(. == "failure" or . == "cancelled")' >/dev/null; then
+          echo "::error::At least one required job failed or was cancelled"
+          exit 1
+        fi

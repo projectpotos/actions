@@ -1,0 +1,36 @@
+---
+name: EOL Workflow
+description: Propose deprecation or removal of a workflow
+labels: ["eol"]
+body:
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Workflow to Deprecate
+      options:
+        - release-ansible-collection.yaml
+        - release-container.yaml
+        - release-zensical.yaml
+        - semantic-release.yaml
+        - test-ansible-collection.yaml
+        - test-lint.yaml
+        - setup-uv (composite action)
+        - all-green (composite action)
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: Why should this workflow be deprecated or removed? What replaces it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected Repositories
+      description: Which repositories still call this workflow, and what is the migration path for them?
+    validations:
+      required: true

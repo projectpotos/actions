@@ -1,0 +1,144 @@
+---
+name: Test Ansible Collection
+
+on:
+  workflow_call:
+    inputs:
+      unit-source-matrix-exclude:
+        description: >-
+          JSON matrix_exclude for the unit-source job. The default tests only
+          the most recent python and ansible versions.
+        type: string
+        required: false
+        default: >-
+          [
+            {"ansible-version": "devel"},
+            {"ansible-version": "stable-2.16"},
+            {"ansible-version": "stable-2.17"},
+            {"ansible-version": "stable-2.18"},
+            {"python-version": "3.10"},
+            {"python-version": "3.11"},
+            {"python-version": "3.12"}
+          ]
+      molecule-scenarios:
+        description: JSON array of molecule scenarios to run (empty = skip molecule).
+        type: string
+        required: false
+        default: "[]"
+      molecule-distros:
+        description: JSON array of distros to run the molecule scenarios against.
+        type: string
+        required: false
+        default: '["fedora44"]'
+      ruff:
+        description: Run ruff check + format.
+        type: boolean
+        required: false
+        default: true
+      ruff-group:
+        description: Optional uv dependency group that provides ruff.
+        type: string
+        required: false
+        default: ""
+      changelog-lint:
+        description: Run antsibull-changelog lint.
+        type: boolean
+        required: false
+        default: true
+
+permissions: {}
+
+jobs:
+  changelog:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    uses: ansible/ansible-content-actions/.github/workflows/changelog.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  build-import:
+    permissions:
+      contents: read
+    uses: ansible/ansible-content-actions/.github/workflows/build_import.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  ansible-lint:
+    permissions:
+      contents: read
+    uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  sanity:
+    permissions:
+      contents: read
+    uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  unit-galaxy:
+    permissions:
+      contents: read
+    uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  unit-source:
+    permissions:
+      contents: read
+    uses: ansible-network/github_actions/.github/workflows/unit_source.yml@20d9511bda90890aa636b5e7baa91d078dcbd143 # main / 2026-07-08
+    with:
+      matrix_exclude: ${{ inputs.unit-source-matrix-exclude }}
+
+  lint:
+    # Relative reference: resolved from this repository at the same commit
+    # as this workflow, so the lint suite always matches this version.
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test-lint.yaml
+    with:
+      ruff: ${{ inputs.ruff }}
+      ruff-group: ${{ inputs.ruff-group }}
+
+  changelog-lint:
+    name: antsibull-changelog lint
+    if: inputs.changelog-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: antsibull-changelog lint
+        run: uv run --frozen antsibull-changelog lint
+
+  molecule:
+    name: molecule (${{ matrix.scenario }} / ${{ matrix.distro }})
+    if: inputs.molecule-scenarios != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ${{ fromJSON(inputs.molecule-distros) }}
+        scenario: ${{ fromJSON(inputs.molecule-scenarios) }}
+    env:
+      MOLECULE_DISTRO: ${{ matrix.distro }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: molecule test
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+        run: uv run --frozen molecule test -s "${SCENARIO}"

@@ -1,0 +1,47 @@
+---
+name: Update Workflow
+description: Request a new input, version bump, or behavior change in an existing workflow
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Affected Workflow or Action
+      options:
+        - release-ansible-collection.yaml
+        - release-container.yaml
+        - release-zensical.yaml
+        - semantic-release.yaml
+        - test-ansible-collection.yaml
+        - test-lint.yaml
+        - setup-uv (composite action)
+        - all-green (composite action)
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: Requested Change
+      description: What should change? New input, different default, tool version bump, behavior change?
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Which repository / use case needs this, and why can't it be solved with the existing inputs?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Is this a breaking change for existing callers?
+      options:
+        - "No — additive (new optional input, patch fix)"
+        - "Yes — changes existing behavior or defaults"
+        - "Unsure"
+    validations:
+      required: true

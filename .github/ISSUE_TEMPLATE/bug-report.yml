@@ -1,0 +1,50 @@
+---
+name: Bug Report
+description: A workflow or composite action behaves incorrectly or fails unexpectedly
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Affected Workflow or Action
+      options:
+        - release-ansible-collection.yaml
+        - release-container.yaml
+        - release-zensical.yaml
+        - semantic-release.yaml
+        - test-ansible-collection.yaml
+        - test-lint.yaml
+        - setup-uv (composite action)
+        - all-green (composite action)
+        - other / unsure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Pinned Version
+      description: The tag/SHA of projectpotos/actions your caller pins.
+      placeholder: "v1.2.3 / abc1234..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the failure. Include a link to the failing workflow run if possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: caller
+    attributes:
+      label: Caller Workflow
+      description: The workflow file (or relevant excerpt) that calls this library.
+      render: yaml
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior

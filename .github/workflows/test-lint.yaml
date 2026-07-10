@@ -1,0 +1,186 @@
+---
+name: Test Lint
+
+on:
+  workflow_call:
+    inputs:
+      yamllint-mode:
+        description: >-
+          "project" runs yamllint from the repository's locked uv project,
+          "standalone" runs it via uvx (no pyproject.toml needed).
+        type: string
+        required: false
+        default: project
+      ruff:
+        description: Run ruff check + format.
+        type: boolean
+        required: false
+        default: false
+      ruff-group:
+        description: Optional uv dependency group that provides ruff.
+        type: string
+        required: false
+        default: ""
+      hadolint:
+        description: Lint the Dockerfile with hadolint.
+        type: boolean
+        required: false
+        default: false
+      dockerfile:
+        description: Path to the Dockerfile for hadolint.
+        type: string
+        required: false
+        default: Dockerfile
+      shellcheck:
+        description: Run shellcheck over all shell scripts.
+        type: boolean
+        required: false
+        default: false
+      shellcheck-opts:
+        description: Extra options passed to shellcheck (e.g. "-e SC1091").
+        type: string
+        required: false
+        default: ""
+      zizmor-persona:
+        description: "zizmor persona: regular, pedantic or auditor."
+        type: string
+        required: false
+        default: regular
+
+permissions: {}
+
+jobs:
+  yamllint:
+    name: yamllint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: yamllint
+        env:
+          MODE: ${{ inputs.yamllint-mode }}
+        run: |
+          case "${MODE}" in
+            project)
+              uv run --frozen yamllint --strict --format github .
+              ;;
+            standalone)
+              uvx yamllint --strict --format github .
+              ;;
+            *)
+              echo "::error::Unknown yamllint-mode '${MODE}'"
+              exit 1
+              ;;
+          esac
+
+  ruff:
+    name: ruff (lint + format)
+    if: inputs.ruff
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: ruff check
+        env:
+          GROUP: ${{ inputs.ruff-group }}
+        run: |
+          uv run --frozen ${GROUP:+--group "${GROUP}"} ruff check --output-format=github .
+
+      - name: ruff format
+        env:
+          GROUP: ${{ inputs.ruff-group }}
+        run: |
+          uv run --frozen ${GROUP:+--group "${GROUP}"} ruff format --check --diff .
+
+  hadolint:
+    name: hadolint
+    if: inputs.hadolint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: hadolint
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: ${{ inputs.dockerfile }}
+          failure-threshold: warning
+
+  shellcheck:
+    name: shellcheck
+    if: inputs.shellcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: shellcheck
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
+        env:
+          SHELLCHECK_OPTS: ${{ inputs.shellcheck-opts }}
+
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: actionlint
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
+
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: zizmor
+        uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
+        with:
+          advanced-security: false
+          annotations: true
+          persona: ${{ inputs.zizmor-persona }}

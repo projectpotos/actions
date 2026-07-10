@@ -1,0 +1,39 @@
+[project]
+site_name = "Potos GitHub Actions"
+site_description = "Reusable GitHub Actions workflows and composite actions for Project Potos CI/CD"
+site_author = "Project Potos"
+site_url = "https://projectpotos.github.io/actions/"
+repo_url = "https://github.com/projectpotos/actions"
+copyright = "Copyright &copy; 2026 Project Potos."
+
+nav = [
+    "index.md",
+    "getting-started.md",
+    { "Workflows" = [
+        "workflows/index.md",
+        { "Ansible Collections" = [
+            "workflows/ansible/index.md",
+            { "Test" = "workflows/ansible/test.md" },
+            { "Release" = "workflows/ansible/release.md" },
+        ] },
+        { "Container Images" = [
+            "workflows/container/index.md",
+            { "Release" = "workflows/container/release.md" },
+        ] },
+        { "Lint" = "workflows/lint.md" },
+        { "Zensical" = "workflows/zensical.md" },
+        { "Semantic Release" = "workflows/semantic-release.md" },
+    ] },
+    { "Composite Actions" = [
+        "actions/index.md",
+        { "setup-uv" = "actions/setup-uv.md" },
+        { "all-green" = "actions/all-green.md" },
+    ] },
+    { "Security" = [
+        "security/index.md",
+        { "Permissions" = "security/permissions.md" },
+        { "Supply Chain" = "security/supply-chain.md" },
+    ] },
+    "contributing.md",
+    { "Workflow Analysis" = "analysis.md" },
+]

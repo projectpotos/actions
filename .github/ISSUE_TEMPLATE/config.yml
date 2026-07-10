@@ -1,0 +1,9 @@
+---
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://projectpotos.github.io/actions/
+    about: Browse the full documentation before opening an issue.
+  - name: Project Potos
+    url: https://potos.dev
+    about: General Project Potos documentation.
