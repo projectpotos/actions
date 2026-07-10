@@ -38,7 +38,6 @@ nav = [
         { "Supply Chain" = "security/supply-chain.md" },
     ] },
     "contributing.md",
-    { "Workflow Analysis" = "analysis.md" },
 ]
 
 # ----------------------------------------------------------------------------
