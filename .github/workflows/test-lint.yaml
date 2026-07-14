@@ -21,6 +21,13 @@ on:
         type: string
         required: false
         default: ""
+      ruff-mode:
+        description: >-
+          "project" runs ruff from the repository's locked uv project,
+          "standalone" runs it via uvx.
+        type: string
+        required: false
+        default: project
       hadolint:
         description: Lint the Dockerfile with hadolint.
         type: boolean
@@ -104,15 +111,39 @@ jobs:
 
       - name: ruff check
         env:
+          MODE: ${{ inputs.ruff-mode }}
           GROUP: ${{ inputs.ruff-group }}
         run: |
-          uv run --frozen ${GROUP:+--group "${GROUP}"} ruff check --output-format=github .
+          case "${MODE}" in
+            project)
+              uv run --frozen ${GROUP:+--group "${GROUP}"} ruff check --output-format=github .
+              ;;
+            standalone)
+              uvx ruff check --output-format=github .
+              ;;
+            *)
+              echo "::error::Unknown ruff-mode '${MODE}'"
+              exit 1
+              ;;
+          esac
 
       - name: ruff format
         env:
+          MODE: ${{ inputs.ruff-mode }}
           GROUP: ${{ inputs.ruff-group }}
         run: |
-          uv run --frozen ${GROUP:+--group "${GROUP}"} ruff format --check --diff .
+          case "${MODE}" in
+            project)
+              uv run --frozen ${GROUP:+--group "${GROUP}"} ruff format --check --diff .
+              ;;
+            standalone)
+              uvx ruff format --check --diff .
+              ;;
+            *)
+              echo "::error::Unknown ruff-mode '${MODE}'"
+              exit 1
+              ;;
+          esac
 
   hadolint:
     name: hadolint
