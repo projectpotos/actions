@@ -10,5 +10,4 @@ Browse the available reusable workflows by category:
 | [Zensical](zensical.md) | Build and deploy Zensical documentation to GitHub Pages |
 | [Semantic Release](semantic-release.md) | Automate releases with go-semantic-release |
 
-For step-level building blocks (uv setup, required-check aggregation), see
-[Composite Actions](../actions/index.md).
+For step-level building blocks, see [Composite Actions](../actions/index.md).

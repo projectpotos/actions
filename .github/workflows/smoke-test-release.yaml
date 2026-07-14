@@ -33,6 +33,14 @@ jobs:
       labels: |
         org.opencontainers.image.title=actions-smoke-test
 
+  smoke-release-ansible-collection:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/release-ansible-collection.yaml
+    with:
+      path: tests/ansible
+      publish: false
+
   smoke-release-zensical:
     permissions:
       contents: read

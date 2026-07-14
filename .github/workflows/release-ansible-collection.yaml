@@ -3,21 +3,36 @@ name: Release Ansible Collection
 
 on:
   workflow_call:
+    inputs:
+      publish:
+        description: Publish the built collection to Ansible Galaxy.
+        type: boolean
+        required: false
+        default: true
+      path:
+        description: Path to the collection root (directory containing galaxy.yml).
+        type: string
+        required: false
+        default: "."
     secrets:
       ANSIBLE_GALAXY_API_KEY:
-        description: API key used to publish the collection on Ansible Galaxy.
-        required: true
+        description: >-
+          API key used to publish the collection on Ansible Galaxy.
+          Required when publish is enabled.
+        required: false
 
 permissions: {}
 
+
 jobs:
-  release:
-    name: Build and publish to Galaxy
+  build:
+    name: Build the collection
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: release
     permissions:
-      contents: read # publishing needs no write access to the repository
+      contents: read
+    outputs:
+      artifact: ${{ steps.version.outputs.artifact }}
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -29,38 +44,71 @@ jobs:
         with:
           enable-cache: false
 
-      - name: Verify the tag matches the galaxy.yml version
+      - name: Determine the version and verify it matches the tag when publishing
         id: version
+        env:
+          INPUTS_PATH: ${{ inputs.path }}
+          INPUTS_PUBLISH: ${{ inputs.publish }}
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          GALAXY_VERSION="$(sed -nE 's/^version: *"?([0-9][^" ]*)"?.*/\1/p' galaxy.yml)"
-          if [ "${TAG_VERSION}" != "${GALAXY_VERSION}" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match galaxy.yml version '${GALAXY_VERSION}'; merge the release PR before tagging" >&2
-            exit 1
+          GALAXY_VERSION="$(sed -nE 's/^version: *"?([0-9][^" ]*)"?.*/\1/p' "${INPUTS_PATH}/galaxy.yml")"
+          if [ "${INPUTS_PUBLISH}" = "true" ]; then
+            TAG_VERSION="${GITHUB_REF_NAME#v}"
+            if [ "${TAG_VERSION}" != "${GALAXY_VERSION}" ]; then
+              echo "::error::Tag ${GITHUB_REF_NAME} does not match galaxy.yml version '${GALAXY_VERSION}'; merge the release PR before tagging" >&2
+              exit 1
+            fi
           fi
-          NAMESPACE="$(sed -nE 's/^namespace: *"?([^" ]*)"?.*/\1/p' galaxy.yml)"
-          NAME="$(sed -nE 's/^name: *"?([^" ]*)"?.*/\1/p' galaxy.yml)"
-          echo "version=${TAG_VERSION}" >> "$GITHUB_OUTPUT"
-          echo "artifact=${NAMESPACE}-${NAME}-${TAG_VERSION}" >> "$GITHUB_OUTPUT"
+          NAMESPACE="$(sed -nE 's/^namespace: *"?([^" ]*)"?.*/\1/p' "${INPUTS_PATH}/galaxy.yml")"
+          NAME="$(sed -nE 's/^name: *"?([^" ]*)"?.*/\1/p' "${INPUTS_PATH}/galaxy.yml")"
+          echo "artifact=${NAMESPACE}-${NAME}-${GALAXY_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Build the collection
-        run: uv run --frozen ansible-galaxy collection build --force --output-path dist
-
-      - name: Publish the collection on Galaxy
         env:
-          ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
-        run: |
-          [ -n "${ANSIBLE_GALAXY_API_KEY}" ] || {
-            echo "::error::ANSIBLE_GALAXY_API_KEY is required to publish" >&2
-            exit 1
-          }
-          TARBALL=$(ls -1 dist/*.tar.gz)
-          uv run --frozen ansible-galaxy collection publish "${TARBALL}" \
-            --api-key "${ANSIBLE_GALAXY_API_KEY}"
+          INPUTS_PATH: ${{ inputs.path }}
+        run: uv run --frozen --directory "${INPUTS_PATH}" ansible-galaxy collection build --force --output-path dist
 
       - name: Upload built collection artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ steps.version.outputs.artifact }}
-          path: dist/*.tar.gz
+          path: ${{ inputs.path }}/dist/*.tar.gz
           if-no-files-found: error
+
+  publish:
+    name: Publish to Galaxy
+    if: inputs.publish
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: release
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: false
+
+      - name: Download built collection artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: dist
+
+      - name: Publish the collection on Galaxy
+        env:
+          ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+          INPUTS_PATH: ${{ inputs.path }}
+        run: |
+          [ -n "${ANSIBLE_GALAXY_API_KEY}" ] || {
+            echo "::error::ANSIBLE_GALAXY_API_KEY is required to publish" >&2
+            exit 1
+          }
+          TARBALL="$(ls -1 "${GITHUB_WORKSPACE}"/dist/*.tar.gz)"
+          uv run --frozen --directory "${INPUTS_PATH}" ansible-galaxy collection publish "${TARBALL}" \
+            --api-key "${ANSIBLE_GALAXY_API_KEY}"

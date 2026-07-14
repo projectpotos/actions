@@ -10,14 +10,17 @@ a called workflow are **no more** than what the calling job grants.
 
 1. **Restrict default token permissions** in your repository's Settings → Actions →
    General → Workflow permissions. Select **"Read repository contents and packages
-   permissions"**.
+   permissions"** to use `contents: read` and `packages: read` as the default instead of
+   the broader write default. For potos organization repositories this is managed centrally
+   via OpenTofu.
 
-2. **Set `permissions: {}`** at the top of every calling workflow, then grant only what
-   each job needs at the job level. Every example in this documentation already follows
-   this pattern.
+2. **Set `permissions: {}`** at the top of every calling workflow to start from a baseline
+   of no permissions, then grant only what each job needs at the job level. Every example
+   in this documentation already follows this pattern.
 
 3. **Keep job-level permissions tightly scoped.** The table below lists the minimum
-   permissions each reusable workflow requires. Only grant what is listed.
+   permissions each reusable workflow requires. Only grant what is listed; the reusable
+   workflow itself will not request anything beyond these.
 
 ## Permissions Reference
 

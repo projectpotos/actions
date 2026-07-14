@@ -4,8 +4,6 @@ Automates versioning with [go-semantic-release](https://go-semantic-release.xyz/
 push to `main` it parses the [Conventional Commits](https://www.conventionalcommits.org/)
 since the last release and creates the next tag and GitHub release automatically.
 
-This workflow also releases this repository itself.
-
 ## Usage
 
 Create a `.github/workflows/semantic-release.yaml` file:
@@ -30,10 +28,10 @@ jobs:
 1. Deny all permissions at the workflow level as a secure baseline.
 2. Required to create tags and GitHub releases.
 
-Note: releases created with the default `GITHUB_TOKEN` do not trigger other workflows
-(such as a tag-triggered release workflow). If a release must trigger follow-up workflows,
-run those on the release event from a manually dispatched workflow, or use a dedicated app
-token.
+!!! hint "releases created with the default `GITHUB_TOKEN` do not trigger other workflows"
+    If a release must trigger follow-up workflows,
+    run those on the release event from a manually dispatched workflow, or use a dedicated personal access
+    token.
 
 ## Inputs
 

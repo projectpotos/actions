@@ -104,6 +104,15 @@ Composite actions: `setup-uv` (checkout + uv), `all-green` (required-check aggre
 6. Update this file's workflow table and the caller's `allowed_actions` in the tofu repo
    config (`tofu-config-potos-github/config/repos.yml`) if new third-party actions are used.
 
+Smoke-test exceptions:
+
+- `test-ansible-collection.yaml` cannot be smoke-tested in this repository: the upstream
+  `ansible/ansible-content-actions` workflows it calls (changelog, build-import, ansible-lint,
+  sanity, unit) operate on the caller's repository root and take no path input, so they
+  cannot be pointed at the `tests/ansible/` fixture. The workflow is exercised by every
+  collection repository's CI instead. (`release-ansible-collection.yaml` *is* smoke-tested
+  against the fixture)
+
 ### Updating an existing workflow
 
 1. Edit the workflow YAML.

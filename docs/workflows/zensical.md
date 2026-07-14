@@ -1,10 +1,8 @@
 # Zensical
 
 Builds a [Zensical](https://zensical.org/) documentation site and deploys it to GitHub
-Pages. The repository needs a `zensical.toml` at its root and GitHub Pages configured for
-the "GitHub Actions" source.
+Pages. 
 
-This workflow also deploys this repository's own documentation on every push to `main`.
 
 ## Usage
 
@@ -20,10 +18,6 @@ on:
   pull_request: # (1)
 
 permissions: {} # (2)
-
-concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   docs:

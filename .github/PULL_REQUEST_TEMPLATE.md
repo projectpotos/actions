@@ -21,11 +21,10 @@ Closes #
 - [ ] Permissions table in `docs/security/permissions.md` is updated
 - [ ] `zensical.toml` nav is updated (required when a docs page is added or removed)
 - [ ] `AGENTS.md` is updated (required when repository structure or conventions change)
-- [ ] A smoke-test job exists (or the exception is documented in `AGENTS.md`)
+- [ ] A smoke-test job exists (or the exception is documented)
 - [ ] All caller examples include `permissions: {}` at the workflow level with explicit per-job permissions
 - [ ] All third-party actions are pinned to a full commit SHA with version tag comment (e.g. `@abc1234 # v3`)
 - [ ] Any new third-party actions have been evaluated against the [action selection criteria](https://projectpotos.github.io/actions/security/supply-chain/#action-selection-criteria)
-- [ ] Consuming repositories' `allowed_actions` (tofu repo config) are updated for new third-party actions
-- [ ] `uvx zizmor --persona pedantic .` and `uvx yamllint --strict .` are clean
+- [ ] No new known-vulnerable dependencies have been introduced (check Dependabot alerts and the [thresholds](https://projectpotos.github.io/actions/security/vulnerability-management/))
 - [ ] For breaking changes: migration guidance is included in the docs and the commit message contains `BREAKING CHANGE:`
 - [ ] For EOL: deprecation notice is added to the workflow YAML and docs

@@ -3,10 +3,17 @@ name: Update Workflow
 description: Request a new input, version bump, or behavior change in an existing workflow
 labels: ["enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request a change to an existing workflow — new inputs, tool version bumps, behavior changes, or security improvements.
+        See the [Contributing guide](https://projectpotos.github.io/actions/contributing/) for the full workflow lifecycle.
+
   - type: dropdown
     id: workflow
     attributes:
       label: Affected Workflow or Action
+      description: Which reusable workflow or composite action should be changed?
       options:
         - release-ansible-collection.yaml
         - release-container.yaml
@@ -19,29 +26,84 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: change
+  - type: dropdown
+    id: update-type
     attributes:
-      label: Requested Change
-      description: What should change? New input, different default, tool version bump, behavior change?
+      label: Type of Update
+      options:
+        - New input / option
+        - Tool or action version bump
+        - Behavior change
+        - Security improvement
+        - Other
     validations:
       required: true
 
   - type: textarea
-    id: motivation
+    id: current
     attributes:
-      label: Motivation
-      description: Which repository / use case needs this, and why can't it be solved with the existing inputs?
+      label: Current Behavior
+      description: Describe the current behavior of the workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired
+    attributes:
+      label: Desired Behavior
+      description: Describe the desired behavior after the update.
     validations:
       required: true
 
   - type: dropdown
     id: breaking
     attributes:
-      label: Is this a breaking change for existing callers?
+      label: Breaking Change?
+      description: Would existing callers need to update their workflows?
       options:
-        - "No — additive (new optional input, patch fix)"
-        - "Yes — changes existing behavior or defaults"
+        - "No"
+        - "Yes — existing callers need to update their workflows"
         - "Unsure"
     validations:
       required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Justification
+      description: Why is this change needed? Link to upstream changelogs, CVEs, or related issues.
+
+  - type: dropdown
+    id: security-impact
+    attributes:
+      label: Security Impact
+      description: Does this update have a security dimension?
+      options:
+        - No security impact
+        - Adds or replaces a third-party action (supply chain impact)
+        - Changes required permissions
+        - Addresses a known vulnerability or CVE
+        - Security improvement (hardens posture)
+        - Other security impact (describe in motivation)
+    validations:
+      required: true
+
+  - type: input
+    id: enisa-control
+    attributes:
+      label: ENISA TA Control Affected (optional)
+      description: |
+        If this update addresses or affects a control from the
+        [ENISA Technical Advisory for Secure Use of Package Managers](https://projectpotos.github.io/actions/security/),
+        note the control ID (e.g. §4.2.3, §4.3.2).
+      placeholder: "e.g. §4.2.3 Integrity Enforcement"
+
+  - type: checkboxes
+    id: security-due-diligence
+    attributes:
+      label: Security Due Diligence
+      options:
+        - label: Caller repositories are mapped and reviewed for immutable references (no unpinned workflows/images)
+          required: true
+        - label: Reusable components and vendor supply-chain impact is assessed for caller exposure
+          required: false

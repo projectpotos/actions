@@ -1,19 +1,10 @@
 # Ansible Collections: Release
 
-Publishes an Ansible collection to [Ansible Galaxy](https://galaxy.ansible.com/) when a
-version tag is pushed. The workflow is for **publishing only**: it verifies that the tag matches
-the `galaxy.yml` version, builds the collection, publishes it, and uploads the tarball as a
-workflow artifact. It needs no write access to the repository.
-
-The version bump and changelog must be adjusted before calling this workflow.
-
-If the tag does not match `galaxy.yml` on the tagged commit, the workflow fails before publishing anything.
+Builds and optionally publishes an Ansible collection to [Galaxy](https://galaxy.ansible.com/).
 
 ## Usage
 
-Create a `.github/workflows/release.yaml` file. The repository needs a `release`
-[environment](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment)
-with the `ANSIBLE_GALAXY_API_KEY` secret.
+Create a `.github/workflows/release.yaml` file.
 
 ```yaml title=".github/workflows/release.yaml"
 ---
@@ -25,10 +16,6 @@ on:
 
 permissions: {} # (1)
 
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   release:
     permissions:
@@ -39,15 +26,17 @@ jobs:
 ```
 
 1. Deny all permissions at the workflow level as a secure baseline.
-2. Publishing needs no write access — the version bump should land via a release PR.
+2. Publishing needs no write access to the repo directly.
 
 ## Inputs
 
-None — the version is derived from the pushed tag and verified against `galaxy.yml`; the
-artifact name is derived from the collection's namespace and name in `galaxy.yml`.
+| Input | Description | Required | Default |
+|---|---|---|---|
+| `publish` | Publish the built collection to Ansible Galaxy | No | `true` |
+| `path` | Path to the collection root (directory containing `galaxy.yml`) | No | `.` |
 
 ## Secrets
 
 | Secret | Description | Required |
 |---|---|---|
-| `ANSIBLE_GALAXY_API_KEY` | API key used to publish the collection on Ansible Galaxy | **Yes** |
+| `ANSIBLE_GALAXY_API_KEY` | API key used to publish the collection on Ansible Galaxy | When `publish` is `true` |

@@ -29,6 +29,9 @@ updates:
 Dependabot updates the commit SHA and the version comment together, for example
 `@abc1234 # v3` → `@def5678 # v4`.
 
+If you need multiple workflows in the same repository, combine them as needed. Please add
+an example to the docs if you use the same combination more than once.
+
 ## Security
 
 These reusable workflows enforce
@@ -48,13 +51,12 @@ To implement least access in your repositories:
    for any third-party actions you use directly. Every workflow in this library pins its
    third-party actions the same way.
 
-For potos organization repositories, `allowed_actions` and required status checks are
-managed centrally via OpenTofu in the repo config repository — new workflow adoptions may
-need an `allowed_actions` update there for the third-party actions used *inside* the called
-workflows (same-org references themselves are always allowed).
+4. **Immutable releases** — releases in this repository are [immutable](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository). Once a GitHub Release is published it cannot be edited or deleted. When you pin to a released tag or its underlying commit SHA you can be confident the content will never silently change.
 
-See [Permissions](security/permissions.md) for what each workflow requires and
+See  for what each workflow requires and
 [Supply Chain](security/supply-chain.md) for the full pinning policy.
+
+See the [Permissions](security/permissions.md) page for a full reference of what each workflow requires, and the [Security](security/) section for the full security controls documentation.
 
 ## Required status checks
 
@@ -74,5 +76,14 @@ All test workflows are designed to aggregate into a single required check via th
           needs: ${{ toJSON(needs) }}
 ```
 
-Skipped jobs are treated as OK (only `failure` and `cancelled` fail the check), so
-conditional jobs don't break required status checks.
+## Issue and Pull Request Templates
+
+To make managing your CI/CD configuration easier, add the issue templates and PR template
+from this repository to your own project. They provide structured forms for reporting
+workflow bugs, requesting updates, and tracking version changes.
+
+Copy the files from `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md` in this
+repository and adapt the workflow list to the ones you actually use.
+
+See the [Contributing](contributing.md) guide for the full workflow lifecycle and how these
+templates are used to maintain this library.

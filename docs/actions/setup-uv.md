@@ -27,7 +27,7 @@ jobs:
 ```
 
 1. Required to check out code.
-2. Omit to use the project's default Python.
+2. Omit to use the project's default Python version.
 
 ## Inputs
 

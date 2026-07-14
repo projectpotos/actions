@@ -1,0 +1,16 @@
+---
+namespace: "projectpotos"
+name: "smoke_test"
+version: 0.0.0
+readme: README.md
+authors:
+  - Project Potos <potos@adfinis.com>
+
+description: Minimal Ansible collection used as a CI smoke-test fixture for projectpotos/actions.
+license:
+  - GPL-3.0-or-later
+
+tags: ["tools"]
+dependencies: {}
+
+repository: https://github.com/projectpotos/actions
