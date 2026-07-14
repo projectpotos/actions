@@ -65,6 +65,7 @@ jobs:
 | `yamllint-mode` | `project` runs yamllint from the repo's locked uv project, `standalone` runs it via uvx | No | `project` |
 | `ruff` | Run ruff check + format | No | `false` |
 | `ruff-group` | Optional uv dependency group that provides ruff | No | `""` |
+| `ruff-mode` | `project` runs ruff from the repo's locked uv project, `standalone` runs it via uvx | No | `project` |
 | `hadolint` | Lint the Dockerfile with hadolint | No | `false` |
 | `dockerfile` | Path to the Dockerfile for hadolint | No | `Dockerfile` |
 | `shellcheck` | Run shellcheck over all shell scripts | No | `false` |
