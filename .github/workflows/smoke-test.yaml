@@ -22,6 +22,11 @@ jobs:
     uses: ./.github/workflows/test-lint.yaml
     with:
       yamllint-mode: standalone
+      ruff: true
+      ruff-mode: standalone
+      hadolint: true
+      dockerfile: tests/container/Dockerfile
+      shellcheck: true
       zizmor-persona: pedantic
 
   smoke-semantic-release:
