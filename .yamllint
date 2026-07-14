@@ -2,6 +2,11 @@
 
 extends: default
 
+ignore:
+  # Local build artifacts of the tests/ansible smoke-test fixture.
+  - "**/.venv/"
+  - "**/dist/"
+
 rules:
   line-length: disable
   truthy:

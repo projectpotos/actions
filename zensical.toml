@@ -36,6 +36,7 @@ nav = [
         "security/index.md",
         { "Permissions" = "security/permissions.md" },
         { "Supply Chain" = "security/supply-chain.md" },
+        { "Vulnerability Management" = "security/vulnerability-management.md" },
     ] },
     "contributing.md",
 ]
@@ -59,6 +60,7 @@ features = [
     "navigation.instant.prefetch",
     "navigation.path",
     "navigation.sections",
+    "navigation.tabs",
     "navigation.top",
     "navigation.tracking",
     "search.highlight",

@@ -1,9 +1,17 @@
 # Ansible Collections: Test
 
-Full CI for an Ansible collection: the upstream
-[`ansible/ansible-content-actions`](https://github.com/ansible/ansible-content-actions)
-suite (changelog check on PRs, build-import, ansible-lint, sanity, unit tests), the shared
-[lint suite](../lint.md), `antsibull-changelog lint`, and an optional molecule matrix.
+This workflow provides a full CI for ansible collection.
+It reuses the upstream [`ansible/ansible-content-actions`](https://github.com/ansible/ansible-content-actions)
+suite and adds a custom molecule workflow, to provide better human readable molecule output than just running the integrity tests.
+
+## Components
+
+* ansible-lint
+* lint for antsibul changelogs
+* ansible sanity tests
+* ansible unit tests
+* ruff linting + formatting
+* molecule tests
 
 ## Usage
 

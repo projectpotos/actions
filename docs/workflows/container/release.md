@@ -1,6 +1,6 @@
 # Container Images: Release
 
-Builds a container image with Buildx, pushes it to a registry (GHCR by default), and
+Builds a container image with Buildx, pushes it to a registry, and
 attaches a [build provenance attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations).
 On `pull_request` events the image is built but not pushed or attested.
 
@@ -20,10 +20,6 @@ on:
   workflow_dispatch:
 
 permissions: {} # (1)
-
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -53,15 +49,6 @@ jobs:
 5. Required to write the build-provenance attestation.
 6. A [docker/metadata-action](https://github.com/docker/metadata-action#tags-input)
    tag specification.
-
-For a weekly rebuild (e.g. to pick up base image updates), add a `schedule` trigger to the
-caller:
-
-```yaml
-on:
-  schedule:
-    - cron: "25 2 * * 1"
-```
 
 ## Inputs
 

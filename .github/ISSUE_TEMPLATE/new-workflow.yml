@@ -84,5 +84,9 @@ body:
           required: true
         - label: The minimum required permissions have been declared and are no broader than necessary
           required: true
-        - label: The consuming repositories' `allowed_actions` (tofu repo config) have been checked for the new actions
+        - label: Callers (downstream repositories) are documented and verified to use immutable release references (no unpinned workflow refs or container images)
+          required: true
+        - label: Reusable components (actions used/provided by this repo) are validated for immutable versioning and source constraints
+          required: true
+        - label: Due diligence includes validating each caller project for lifecycle/retention policies and any transitive dependency risk
           required: true

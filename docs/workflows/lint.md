@@ -1,7 +1,11 @@
 # Lint
 
-The canonical lint suite for all potos repositories. yamllint, actionlint, and zizmor always
-run; ruff, hadolint, and shellcheck are opt-in.
+The lint suite for all potos repositories. Some linters like yamllint, actionlint, and zizmor always
+run, with the assumption that repository must at least have a workflow definition.
+
+Depending on the projects needs ruff, hadolint, and shellcheck can be enabled as well.
+
+The lint suit also includes capabilites to lint 
 
 Other workflows in this library (like
 [test-ansible-collection](ansible/test.md)) embed this suite via a relative reference, so it
@@ -37,7 +41,6 @@ jobs:
       ruff-group: lint
       hadolint: true
       shellcheck: true
-      shellcheck-opts: "-e SC1091"
 
   all_green:
     if: ${{ always() }}

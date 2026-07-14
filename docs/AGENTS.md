@@ -13,14 +13,14 @@ references.
 
 ```
 docs/
-  index.md              # Home page
+  index.md              # Home page (hero + feature grid, styled via stylesheets/extra.css)
   getting-started.md    # Quickstart and security baseline instructions
-  contributing.md       # Workflow lifecycle and process guide
-  analysis.md           # Workflow analysis across potos repos (design background)
+  contributing.md       # Workflow lifecycle, security review, and process guide
   security/
-    index.md            # Security overview and controls table
+    index.md            # ENISA TA threat model and controls compliance matrix
     permissions.md      # Reference table: workflow → required permissions
-    supply-chain.md     # Pinning policy, internal relative refs, action selection
+    supply-chain.md     # ENISA §4.1/§4.2: action selection, SHA pinning, source enforcement
+    vulnerability-management.md  # ENISA §4.3/§4.4: monitoring, assessment, mitigation
   workflows/
     index.md            # Workflow category overview table
     ansible/
