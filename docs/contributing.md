@@ -111,5 +111,5 @@ on every push to `main`, so do not create version tags manually. Commit messages
 Projects that adopt these workflows can copy and adapt `.github/ISSUE_TEMPLATE/` and
 `.github/PULL_REQUEST_TEMPLATE.md` from this repository to standardise their own CI/CD
 configuration changes, and should add the
-[Dependabot configuration](getting-started.md#usage) to keep workflow SHA pins up to date
+[Renovate configuration](getting-started.md#usage) to keep workflow SHA pins up to date
 automatically.

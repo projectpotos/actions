@@ -40,7 +40,7 @@ zensical.toml               # Zensical configuration (site name, nav)
   **every job** with the minimum set required and a comment for every write grant.
   See `docs/security/permissions.md` for the reference table.
 - **Actions pinning**: Pin all third-party actions and reusable workflows to a full commit SHA
-  with the version tag as a comment (e.g. `@abc123... # v3.1.0`). Dependabot keeps the pins
+  with the version tag as a comment (e.g. `@abc123... # v3.1.0`). Renovate keeps the pins
   current. Never use a mutable tag or branch for anything external.
 - **Internal reuse**: Reference sibling reusable workflows **relatively**
   (`uses: ./.github/workflows/test-lint.yaml`) — GitHub resolves the reference at the same

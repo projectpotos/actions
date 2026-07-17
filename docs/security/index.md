@@ -35,7 +35,7 @@ Status: ✅ Implemented · ⚠️ Partial · ❌ Gap · N/A Not applicable
 
 | Control | Description | Status | Reference |
 |---|---|---|---|
-| 4.1.1 Trusted Source | Use official registries; prefer provenance metadata | ✅ | SHA pins enforce exact commit; org-level `allowed_actions` allowlist restricts sources; Dependabot keeps pins current |
+| 4.1.1 Trusted Source | Use official registries; prefer provenance metadata | ✅ | SHA pins enforce exact commit; org-level `allowed_actions` allowlist restricts sources; Renovate keeps pins current |
 | 4.1.2 Known Vulnerabilities | Check vulnerability databases before adopting a dependency | ⚠️ | Dependabot alerts exist; pre-adoption checks are part of the [selection criteria](supply-chain.md#action-selection-criteria) but not yet automated (see [radiorabe/actions#194](https://github.com/radiorabe/actions/issues/194)) |
 | 4.1.3 Signing & Integrity | Use cryptographic signing to verify integrity | ✅ | SHA pinning is cryptographic integrity for actions; keyless build-provenance attestation for containers |
 | 4.1.4 Maintainer Reputation | Select packages from reputable, verified maintainers | ⚠️ | Criteria documented in [Supply Chain](supply-chain.md#action-selection-criteria); no automated checks |
@@ -59,9 +59,9 @@ Status: ✅ Implemented · ⚠️ Partial · ❌ Gap · N/A Not applicable
 |---|---|---|---|
 | 4.3.1 SBOM-driven Monitoring | Leverage SBOM data to automate vulnerability correlation | ❌ | This repo does not create/consume SBOMs |
 | 4.3.2 Automated Scanning in CI/CD | Continuously scan dependencies | ⚠️ | zizmor and actionlint run on every PR; transitive action dependencies are not scanned — see [Vulnerability Management](vulnerability-management.md#automated-scanning) |
-| 4.3.3 Track CVEs / Advisories | Monitor EUVD, OSV.dev, GitHub Advisories | ⚠️ | Dependabot covers the GitHub Advisory Database; manual EUVD/OSV monitoring documented in [Vulnerability Management](vulnerability-management.md#advisory-monitoring) |
-| 4.3.4 Monitor Outdated Versions | Check for newer versions | ✅ | Dependabot opens PRs daily for outdated SHA pins (7-day cooldown against fresh releases) |
-| 4.3.5 Set Alerts | Alerts for new CVEs, deprecated releases, maintainer changes | ⚠️ | Dependabot covers CVE/version alerts; no automated maintainer-change detection |
+| 4.3.3 Track CVEs / Advisories | Monitor EUVD, OSV.dev, GitHub Advisories | ⚠️ | Renovate covers the GitHub Advisory Database and OSV.dev; manual EUVD monitoring documented in [Vulnerability Management](vulnerability-management.md#advisory-monitoring) |
+| 4.3.4 Monitor Outdated Versions | Check for newer versions | ✅ | Renovate opens PRs for outdated SHA pins (7-day cooldown against fresh releases) |
+| 4.3.5 Set Alerts | Alerts for new CVEs, deprecated releases, maintainer changes | ⚠️ | Renovate covers CVE/version alerts; no automated maintainer-change detection |
 
 ### §4.4 Vulnerability Mitigation
 

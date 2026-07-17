@@ -10,23 +10,17 @@ as a comment:
 uses: projectpotos/actions/.github/workflows/test-lint.yaml@<full-commit-sha> # vX.Y.Z
 ```
 
-To keep the pins up to date automatically, create a `.github/dependabot.yml` file:
+To keep the pins up to date automatically, create a `renovate.json` file extending the
+shared [projectpotos config](https://github.com/projectpotos/renovate-config):
 
-```yaml title=".github/dependabot.yml"
----
-version: 2
-updates:
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: daily
-    commit-message:
-      prefix: "chore(ci): "
-    cooldown:
-      default-days: 7
+```json title="renovate.json"
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>projectpotos/renovate-config"]
+}
 ```
 
-Dependabot updates the commit SHA and the version comment together, for example
+Renovate updates the commit SHA and the version comment together, for example
 `@abc1234 # v3` → `@def5678 # v4`.
 
 If you need multiple workflows in the same repository, combine them as needed. Please add

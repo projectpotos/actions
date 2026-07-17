@@ -81,7 +81,7 @@ jobs:
 
 - Pin **everything external** (actions and reusable workflows) to a full commit SHA with the
   version tag as a comment: `uses: owner/repo@<sha> # vN.N.N`.
-- Dependabot updates the SHA and the comment together; never hand-edit only one of them.
+- Renovate updates the SHA and the comment together; never hand-edit only one of them.
 - Reference **sibling workflows relatively** (`uses: ./.github/workflows/test-lint.yaml`) —
   no ref needed; GitHub resolves them at the same commit as the containing workflow.
 - Composite actions in this repository cannot be referenced relatively from reusable
