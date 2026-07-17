@@ -8,7 +8,7 @@ and composite actions that Project Potos uses for CI/CD ♻️
 ## Quick Examples
 
 Replace `@v0.0.0` with the full commit SHA of the current release (version tag as comment);
-Dependabot keeps the pins fresh.
+Renovate keeps the pins fresh.
 
 ### Ansible Collection CI
 

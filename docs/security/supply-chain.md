@@ -92,27 +92,18 @@ This provides two complementary controls in one line:
 | **Integrity enforcement** | GitHub resolves the `uses:` reference by SHA; a different commit cannot be substituted | §4.2.3 |
 | **Human readability** | The inline comment (`# v7.0.0`) shows which release the SHA corresponds to | — |
 
-### Automation with Dependabot
+### Automation with Renovate
 
-Pinned SHAs are kept current automatically by Dependabot, daily with a **7-day cooldown**
-against freshly-released versions. When a new version of an action is released, Dependabot
-opens a PR that updates both the SHA and the inline version comment. This maintains the
-integrity guarantee without requiring manual tracking.
+All dependencies are kept up-to-date automatically by [Renovate](https://docs.renovatebot.com/).
 
-Configure Dependabot in your downstream repository:
+Configure Renovate in your repository by extending the shared
+[projectpotos config](https://github.com/projectpotos/renovate-config):
 
-```yaml title=".github/dependabot.yml"
----
-version: 2
-updates:
-  - package-ecosystem: github-actions
-    directory: "/"
-    schedule:
-      interval: daily
-    commit-message:
-      prefix: "chore(ci): "
-    cooldown:
-      default-days: 7
+```json title="renovate.json"
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>projectpotos/renovate-config"]
+}
 ```
 
 ### Never Use Mutable References
