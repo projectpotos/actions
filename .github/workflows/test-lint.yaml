@@ -48,6 +48,29 @@ on:
         type: string
         required: false
         default: ""
+      shellcheck-jinja:
+        description: >-
+          Render the repository's *.sh.j2 shell templates with fixture data
+          and run shellcheck on the results.
+        type: boolean
+        required: false
+        default: false
+      shellcheck-jinja-group:
+        description: Optional uv dependency group that provides shellcheck-jinja.
+        type: string
+        required: false
+        default: ""
+      shellcheck-jinja-fixtures:
+        description: Directory containing the shellcheck-jinja fixture files.
+        type: string
+        required: false
+        default: tests/shellcheck-fixtures
+      shellcheck-jinja-path:
+        description: >-
+          Working directory for shellcheck-jinja.
+        type: string
+        required: false
+        default: "."
       zizmor-persona:
         description: "zizmor persona: regular, pedantic or auditor."
         type: string
@@ -181,6 +204,33 @@ jobs:
         uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
         env:
           SHELLCHECK_OPTS: ${{ inputs.shellcheck-opts }}
+
+  shellcheck-jinja:
+    name: shellcheck-jinja
+    if: inputs.shellcheck-jinja
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f98e06938123ccabd21905ea5d0069192241f9f1 # v8.3.1
+        with:
+          enable-cache: true
+
+      - name: Render shell templates and shellcheck them
+        env:
+          GROUP: ${{ inputs.shellcheck-jinja-group }}
+          FIXTURES_DIR: ${{ inputs.shellcheck-jinja-fixtures }}
+          INPUTS_PATH: ${{ inputs.shellcheck-jinja-path }}
+        run: |
+          cd "${INPUTS_PATH}"
+          uv run --frozen ${GROUP:+--group "${GROUP}"} shellcheck-jinja --fixtures-dir "${FIXTURES_DIR}"
 
   actionlint:
     name: actionlint

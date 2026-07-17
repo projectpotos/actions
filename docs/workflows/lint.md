@@ -3,9 +3,12 @@
 The lint suite for all potos repositories. Some linters like yamllint, actionlint, and zizmor always
 run, with the assumption that repository must at least have a workflow definition.
 
-Depending on the projects needs ruff, hadolint, and shellcheck can be enabled as well.
+Depending on the projects needs ruff, hadolint, shellcheck, and shellcheck-jinja can be
+enabled as well.
 
-The lint suit also includes capabilites to lint 
+shellcheck-jinja lints shell scripts that only exist as Jinja2 templates (`*.sh.j2`):  
+it renders every template with fixture data from the repository and runs shellcheck on the rendered output, using
+[projectpotos/shellcheck-jinja](https://github.com/projectpotos/shellcheck-jinja).
 
 Other workflows in this library (like
 [test-ansible-collection](ansible/test.md)) embed this suite via a relative reference, so it
@@ -70,4 +73,8 @@ jobs:
 | `dockerfile` | Path to the Dockerfile for hadolint | No | `Dockerfile` |
 | `shellcheck` | Run shellcheck over all shell scripts | No | `false` |
 | `shellcheck-opts` | Extra options passed to shellcheck | No | `""` |
+| `shellcheck-jinja` | Render `*.sh.j2` templates with fixture data and shellcheck the results | No | `false` |
+| `shellcheck-jinja-group` | Optional uv dependency group that provides shellcheck-jinja | No | `""` |
+| `shellcheck-jinja-fixtures` | Directory containing the shellcheck-jinja fixture files | No | `tests/shellcheck-fixtures` |
+| `shellcheck-jinja-path` | Directory of the uv project the shell templates and fixtures live in | No | `.` |
 | `zizmor-persona` | zizmor persona: `regular`, `pedantic`, or `auditor` | No | `regular` |

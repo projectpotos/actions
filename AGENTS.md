@@ -83,7 +83,7 @@ All work happens on feature branches. Open a PR to `main`; do not manually creat
 | `release-zensical.yaml` | Build and deploy Zensical docs to GitHub Pages (also deploys this repo's docs) |
 | `semantic-release.yaml` | Automate releases with go-semantic-release (also releases this repo) |
 | `test-ansible-collection.yaml` | Full Ansible collection CI (upstream ansible suite + lint + molecule) |
-| `test-lint.yaml` | Lint suite: yamllint, actionlint, zizmor always; ruff, hadolint, shellcheck opt-in |
+| `test-lint.yaml` | Lint suite: yamllint, actionlint, zizmor always; ruff, hadolint, shellcheck, shellcheck-jinja opt-in |
 | `smoke-test.yaml` | This repo's CI: smoke tests for the test workflows (required check: `all_green`) |
 | `smoke-test-release.yaml` | This repo's CI: smoke tests for the release workflows |
 
@@ -141,7 +141,7 @@ Reusable workflows are smoke-tested on each PR to `main` by calling the **local*
 
 | Smoke test job | File | Workflow under test | Test strategy |
 |---|---|---|---|
-| `smoke-test-lint` | `smoke-test.yaml` | `test-lint.yaml` | Lint this repo (`yamllint-mode: standalone`, `zizmor-persona: pedantic`) |
+| `smoke-test-lint` | `smoke-test.yaml` | `test-lint.yaml` | Lint this repo (`yamllint-mode: standalone`, `zizmor-persona: pedantic`); shellcheck-jinja against the `tests/shellcheck-jinja/` fixture |
 | `smoke-semantic-release` | `smoke-test.yaml` | `semantic-release.yaml` | `dry: true` — compute next version, create nothing |
 | `smoke-release-container` | `smoke-test-release.yaml` | `release-container.yaml` | Build `tests/container/Dockerfile` (`FROM scratch`); push/attest gated on non-PR events |
 | `smoke-release-zensical` | `smoke-test-release.yaml` | `release-zensical.yaml` | Build this repo's docs; `deploy: false` |

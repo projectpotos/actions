@@ -1,0 +1,9 @@
+[project]
+name = "actions-shellcheck-jinja-smoke-test"
+version = "0.0.0"
+description = "uv project providing shellcheck-jinja for the lint smoke-test fixture."
+requires-python = ">=3.12"
+dependencies = ["shellcheck-jinja"]
+
+[tool.uv.sources]
+shellcheck-jinja = { git = "https://github.com/projectpotos/shellcheck-jinja", tag = "v0.2.0" }
