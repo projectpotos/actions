@@ -71,3 +71,5 @@ jobs:
 | `ruff` | Run ruff check + format | No | `true` |
 | `ruff-group` | Optional uv dependency group that provides ruff | No | `""` |
 | `changelog-lint` | Run antsibull-changelog lint | No | `true` |
+| `shellcheck-jinja` | Render `*.sh.j2` templates with fixture data and shellcheck the results | No | `false` |
+| `shellcheck-jinja-fixtures` | Directory containing the shellcheck-jinja fixture files | No | `tests/shellcheck-fixtures` |

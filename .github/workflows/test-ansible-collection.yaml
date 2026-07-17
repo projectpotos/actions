@@ -45,6 +45,23 @@ on:
         type: boolean
         required: false
         default: true
+      shellcheck-jinja:
+        description: >-
+          Render the repository's *.sh.j2 shell templates with fixture data
+          and run shellcheck on the results.
+        type: boolean
+        required: false
+        default: false
+      shellcheck-jinja-group:
+        description: Optional uv dependency group that provides shellcheck-jinja.
+        type: string
+        required: false
+        default: ""
+      shellcheck-jinja-fixtures:
+        description: Directory containing the shellcheck-jinja fixture files.
+        type: string
+        required: false
+        default: tests/shellcheck-fixtures
 
 permissions: {}
 
@@ -91,6 +108,9 @@ jobs:
     with:
       ruff: ${{ inputs.ruff }}
       ruff-group: ${{ inputs.ruff-group }}
+      shellcheck-jinja: ${{ inputs.shellcheck-jinja }}
+      shellcheck-jinja-group: ${{ inputs.shellcheck-jinja-group }}
+      shellcheck-jinja-fixtures: ${{ inputs.shellcheck-jinja-fixtures }}
 
   changelog-lint:
     name: antsibull-changelog lint

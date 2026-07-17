@@ -27,6 +27,8 @@ jobs:
       hadolint: true
       dockerfile: tests/container/Dockerfile
       shellcheck: true
+      shellcheck-jinja: true
+      shellcheck-jinja-path: tests/shellcheck-jinja
       zizmor-persona: pedantic
 
   smoke-semantic-release:
