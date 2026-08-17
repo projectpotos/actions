@@ -95,7 +95,7 @@ jobs:
   unit-source:
     permissions:
       contents: read
-    uses: ansible-network/github_actions/.github/workflows/unit_source.yml@20d9511bda90890aa636b5e7baa91d078dcbd143 # main / 2026-07-08
+    uses: ansible-network/github_actions/.github/workflows/unit_source.yml@4678c74a7d712d55e663c88f66eec6d9c3642550 # main / 2026-07-08
     with:
       matrix_exclude: ${{ inputs.unit-source-matrix-exclude }}
 
