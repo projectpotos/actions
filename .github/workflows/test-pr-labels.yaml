@@ -1,0 +1,64 @@
+---
+name: Test PR Labels
+
+# Labels a pull request from its conventional-commit title (release-drafter
+# autolabeler, see .github/release-drafter.yml) and fails unless it carries
+# one of the labels the release notes and changelog are generated from.
+on:
+  workflow_call:
+    inputs:
+      valid-labels:
+        description: Comma-separated labels of which at least one must be present.
+        type: string
+        required: false
+        default: bug, enhancement, feature, refactoring, major, deprecated, skip-changelog
+      invalid-labels:
+        description: Comma-separated labels none of which may be present.
+        type: string
+        required: false
+        default: help wanted, invalid, feedback-needed, incomplete
+
+permissions: {}
+
+jobs:
+  pr-labels:
+    name: Check the pull request labels
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write # the autolabeler adds labels to the pull request
+    steps:
+      - name: Autolabel from the pull request title
+        uses: release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
+        with:
+          disable-autolabeler: false
+          disable-releaser: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Fork pull requests get a read-only token; their labels must be set by hand.
+        continue-on-error: true
+
+      - name: Verify the labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          VALID_LABELS: ${{ inputs.valid-labels }}
+          INVALID_LABELS: ${{ inputs.invalid-labels }}
+        run: |
+          labels="$(gh pr view "${PR_NUMBER}" --repo "${GITHUB_REPOSITORY}" --json labels --jq '.labels[].name')"
+          echo "Labels: $(echo "${labels}" | tr '\n' ' ')"
+          has() { grep -qxF -- "$1" <<< "${labels}"; }
+          IFS=, read -ra invalid <<< "${INVALID_LABELS}"
+          for label in "${invalid[@]}"; do
+            if has "${label# }"; then
+              echo "::error::Pull request carries the invalid label '${label# }'"
+              exit 1
+            fi
+          done
+          IFS=, read -ra valid <<< "${VALID_LABELS}"
+          for label in "${valid[@]}"; do
+            has "${label# }" && exit 0
+          done
+          echo "::error::Pull request needs one of: ${VALID_LABELS}. Use a conventional-commit title (feat:, fix:, refactor:, chore:, ...) or add a label by hand."
+          exit 1

@@ -8,6 +8,7 @@ Browse the available reusable workflows by category:
 | [Container Images](container/index.md) | Build, push, and attest container images |
 | [Lint](lint.md) | Generic lint suite: yamllint, actionlint, zizmor, ruff, hadolint, shellcheck |
 | [Zensical](zensical.md) | Build and deploy Zensical documentation to GitHub Pages |
+| [PR Labels](pr-labels.md) | Label pull requests from their conventional-commit titles and require a release label |
 | [Semantic Release](semantic-release.md) | Automate releases with go-semantic-release |
 
 For step-level building blocks, see [Composite Actions](../actions/index.md).

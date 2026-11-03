@@ -27,11 +27,13 @@ a called workflow are **no more** than what the calling job grants.
 | Reusable Workflow | Required `permissions` |
 |---|---|
 | `release-ansible-collection.yaml` | `contents: read` |
+| `release-draft-ansible-collection.yaml` | `contents: read`, `id-token: write` (OpenBao OIDC login); the writes use a GitHub App token scoped to contents, pull requests and metadata |
 | `release-container.yaml` | `contents: read`, `packages: write`, `id-token: write`, `attestations: write` |
 | `release-zensical.yaml` | `contents: read`, `pages: write`, `id-token: write` |
 | `semantic-release.yaml` | `contents: write` (creates tags and releases) |
 | `test-ansible-collection.yaml` | `contents: read` |
 | `test-lint.yaml` | `contents: read` |
+| `test-pr-labels.yaml` | `contents: read`, `pull-requests: write` (autolabeler) |
 
 Composite actions:
 

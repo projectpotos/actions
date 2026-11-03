@@ -1,0 +1,136 @@
+---
+name: Release Draft Ansible Collection
+
+# Drafts a collection release the way the Ansible community collections do:
+# release-drafter resolves the next version from the merged pull requests'
+# labels and drafts the GitHub release, antsibull-changelog and antsichaut turn
+# the pull requests and changelog fragments into changelogs/changelog.yaml and
+# CHANGELOG.rst, galaxy.yml is bumped and a release pull request is opened.
+# Publishing the draft afterwards triggers release-ansible-collection.yaml.
+#
+# Everything runs with a GitHub App installation token so the pull request
+# triggers CI (a GITHUB_TOKEN-created pull request never does). The app
+# credentials come from OpenBao (openbao-* inputs) or from the APP_ID and
+# APP_PRIVATE_KEY secrets.
+on:
+  workflow_call:
+    inputs:
+      openbao-url:
+        description: OpenBao address. Leave empty to use the APP_ID and APP_PRIVATE_KEY secrets instead.
+        type: string
+        required: false
+        default: ""
+      openbao-role:
+        description: JWT auth role to log in with.
+        type: string
+        required: false
+        default: ""
+      openbao-jwt-path:
+        description: Mount path of the JWT auth method.
+        type: string
+        required: false
+        default: jwt-github
+      openbao-audience:
+        description: Audience of the GitHub OIDC token. Defaults to https://github.com/<owner>.
+        type: string
+        required: false
+        default: ""
+      openbao-secret:
+        description: KV path of the app credentials, holding the fields app_id and private_key.
+        type: string
+        required: false
+        default: ""
+    secrets:
+      APP_ID:
+        description: GitHub App ID. Used when openbao-url is empty.
+        required: false
+      APP_PRIVATE_KEY:
+        description: GitHub App private key (PEM). Used when openbao-url is empty.
+        required: false
+
+permissions: {}
+
+jobs:
+  draft-release:
+    name: Draft the release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write # OIDC login to OpenBao; the app token does all the writing
+    steps:
+      - name: Get the app credentials from OpenBao
+        id: bao
+        if: inputs.openbao-url != ''
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
+        with:
+          url: ${{ inputs.openbao-url }}
+          method: jwt
+          path: ${{ inputs.openbao-jwt-path }}
+          role: ${{ inputs.openbao-role }}
+          jwtGithubAudience: ${{ inputs.openbao-audience || format('https://github.com/{0}', github.repository_owner) }}
+          exportEnv: false
+          secrets: |
+            ${{ inputs.openbao-secret }} app_id | APP_ID ;
+            ${{ inputs.openbao-secret }} private_key | APP_PRIVATE_KEY
+
+      - name: Create the app token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ steps.bao.outputs.APP_ID || secrets.APP_ID }}
+          private-key: ${{ steps.bao.outputs.APP_PRIVATE_KEY || secrets.APP_PRIVATE_KEY }}
+          permission-contents: write # draft release, changelog branch
+          permission-pull-requests: write # release pull request
+          permission-metadata: read
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: false
+
+      - name: Draft the GitHub release and resolve the version
+        id: release-drafter
+        uses: release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Generate the changelog and bump galaxy.yml
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          VERSION: ${{ steps.release-drafter.outputs.resolved_version }}
+        run: |
+          SINCE_VERSION="$(gh release list --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')"
+          export SINCE_VERSION
+          uvx antsibull-changelog==0.36.0 release --version "${VERSION}"
+          uvx antsichaut==0.4.0
+          uvx antsibull-changelog==0.36.0 generate
+          uvx pre-commit==4.7.0 run prettier --files CHANGELOG.rst changelogs/changelog.yaml || true
+          sed -i -E "s/^version:.*/version: ${VERSION}/" galaxy.yml
+
+      - name: Open the release pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          VERSION: ${{ steps.release-drafter.outputs.resolved_version }}
+          BRANCH: chore-draft-release-${{ github.run_number }}
+        run: |
+          if git diff --quiet; then
+            echo "Nothing changed since the last release, no pull request needed."
+            exit 0
+          fi
+          gh auth setup-git
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${APP_SLUG}[bot]@users.noreply.github.com"
+          git switch --create "${BRANCH}"
+          git add CHANGELOG.rst changelogs galaxy.yml
+          git commit --message "chore: release v${VERSION}"
+          git push --set-upstream origin "${BRANCH}"
+          gh pr create --base main --title "chore: release v${VERSION}" \
+            --body "Changelog and version bump for v${VERSION}. After merging, publish the draft release to build and publish the collection."

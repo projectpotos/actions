@@ -4,6 +4,7 @@ name: Smoke Test Workflows
 on:
   pull_request:
     branches: [main]
+    types: [opened, reopened, synchronize, labeled, unlabeled]
   workflow_dispatch:
 
 permissions: {}
@@ -40,12 +41,22 @@ jobs:
     with:
       dry: true
 
+  # Not a dry run: this labels and checks this repository's own pull requests,
+  # which is exactly what the workflow does for consumers.
+  smoke-test-pr-labels:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write # declared by test-pr-labels.yaml for the autolabeler
+    uses: ./.github/workflows/test-pr-labels.yaml
+
   all_green:
     name: all_green
     if: ${{ always() }}
     needs:
       - smoke-test-lint
       - smoke-semantic-release
+      - smoke-test-pr-labels
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

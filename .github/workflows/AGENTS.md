@@ -82,6 +82,8 @@ jobs:
 - Pin **everything external** (actions and reusable workflows) to a full commit SHA with the
   version tag as a comment: `uses: owner/repo@<sha> # vN.N.N`.
 - Renovate updates the SHA and the comment together; never hand-edit only one of them.
+- Python tools run via `uvx <package>==<version>`; a regex manager in `renovate.json`
+  tracks those pins, so always write the `==` pin.
 - Reference **sibling workflows relatively** (`uses: ./.github/workflows/test-lint.yaml`) —
   no ref needed; GitHub resolves them at the same commit as the containing workflow.
 - Composite actions in this repository cannot be referenced relatively from reusable

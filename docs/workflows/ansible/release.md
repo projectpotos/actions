@@ -1,6 +1,8 @@
 # Ansible Collections: Release
 
 Builds and optionally publishes an Ansible collection to [Galaxy](https://galaxy.ansible.com/).
+It runs when the draft release prepared by [Draft Release](draft-release.md) is published
+and verifies that the release tag matches the version in `galaxy.yml`.
 
 ## Usage
 
@@ -11,8 +13,8 @@ Create a `.github/workflows/release.yaml` file.
 name: Release
 
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
 
 permissions: {} # (1)
 

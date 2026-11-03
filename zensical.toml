@@ -17,6 +17,7 @@ nav = [
         { "Ansible Collections" = [
             "workflows/ansible/index.md",
             { "Test" = "workflows/ansible/test.md" },
+            { "Draft Release" = "workflows/ansible/draft-release.md" },
             { "Release" = "workflows/ansible/release.md" },
         ] },
         { "Container Images" = [
@@ -25,6 +26,7 @@ nav = [
         ] },
         { "Lint" = "workflows/lint.md" },
         { "Zensical" = "workflows/zensical.md" },
+        { "PR Labels" = "workflows/pr-labels.md" },
         { "Semantic Release" = "workflows/semantic-release.md" },
     ] },
     { "Composite Actions" = [

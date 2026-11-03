@@ -41,7 +41,8 @@ zensical.toml               # Zensical configuration (site name, nav)
   See `docs/security/permissions.md` for the reference table.
 - **Actions pinning**: Pin all third-party actions and reusable workflows to a full commit SHA
   with the version tag as a comment (e.g. `@abc123... # v3.1.0`). Renovate keeps the pins
-  current. Never use a mutable tag or branch for anything external.
+  current. Never use a mutable tag or branch for anything external. Python tools run via
+  `uvx <package>==<version>`; a regex manager in `renovate.json` tracks those pins.
 - **Internal reuse**: Reference sibling reusable workflows **relatively**
   (`uses: ./.github/workflows/test-lint.yaml`) — GitHub resolves the reference at the same
   commit as the containing workflow, so consumers pinning one SHA get a consistent set.
@@ -72,18 +73,23 @@ specification. Releases are automated by go-semantic-release on every push to `m
 - `docs:`, `ci:`, `chore:` — no release unless combined with the above
 - `BREAKING CHANGE:` footer on any type → **major** bump
 
+`test-pr-labels.yaml` (run on every PR by `smoke-test.yaml`) additionally labels the PR from
+its conventional-commit title; `.github/release-drafter.yml` holds the title → label mapping.
+
 All work happens on feature branches. Open a PR to `main`; do not manually create version tags.
 
 ## Workflows Provided
 
 | File | Purpose |
 |---|---|
-| `release-ansible-collection.yaml` | Publish Galaxy release |
+| `release-ansible-collection.yaml` | Publish Galaxy release (on `release: published`) |
+| `release-draft-ansible-collection.yaml` | Draft a collection release with a GitHub App token (secrets or OpenBao): version from PR labels, antsibull/antsichaut changelog, release PR |
 | `release-container.yaml` | Build, push, and attest container images (GHCR by default) |
 | `release-zensical.yaml` | Build and deploy Zensical docs to GitHub Pages (also deploys this repo's docs) |
 | `semantic-release.yaml` | Automate releases with go-semantic-release (also releases this repo) |
 | `test-ansible-collection.yaml` | Full Ansible collection CI (upstream ansible suite + lint + molecule) |
 | `test-lint.yaml` | Lint suite: yamllint, actionlint, zizmor always; ruff, hadolint, shellcheck, shellcheck-jinja opt-in |
+| `test-pr-labels.yaml` | Autolabel a PR from its conventional-commit title and require a release label |
 | `smoke-test.yaml` | This repo's CI: smoke tests for the test workflows (required check: `all_green`) |
 | `smoke-test-release.yaml` | This repo's CI: smoke tests for the release workflows |
 
@@ -143,6 +149,7 @@ Reusable workflows are smoke-tested on each PR to `main` by calling the **local*
 |---|---|---|---|
 | `smoke-test-lint` | `smoke-test.yaml` | `test-lint.yaml` | Lint this repo (`yamllint-mode: standalone`, `zizmor-persona: pedantic`); shellcheck-jinja against the `tests/shellcheck-jinja/` fixture |
 | `smoke-semantic-release` | `smoke-test.yaml` | `semantic-release.yaml` | `dry: true` — compute next version, create nothing |
+| `smoke-test-pr-labels` | `smoke-test.yaml` | `test-pr-labels.yaml` | Not a dry run: labels and checks this repo's own PRs |
 | `smoke-release-container` | `smoke-test-release.yaml` | `release-container.yaml` | Build `tests/container/Dockerfile` (`FROM scratch`); push/attest gated on non-PR events |
 | `smoke-release-zensical` | `smoke-test-release.yaml` | `release-zensical.yaml` | Build this repo's docs; `deploy: false` |
 
@@ -157,6 +164,9 @@ Workflows **not** smoke-tested and why:
 - `release-ansible-collection.yaml` — requires a locked uv project and `galaxy.yml` at the
   repository root, plus a matching version tag and the `release` environment. Validated in
   the consuming collection repositories.
+- `release-draft-ansible-collection.yaml` — needs GitHub App credentials and always has
+  side effects (draft release, changelog branch, PR). Validated in the consuming collection
+  repositories.
 
 ### Making workflows smoke-testable
 
@@ -192,5 +202,6 @@ zensical serve
 
 - [tofu-config-potos-github](https://github.com/projectpotos/repo-config-tofu) — manages this
   repo's settings, `allowed_actions`, and required status checks via OpenTofu
-- Consumer repos: `ansible-collection-potos.base`, `potos-iso-builder`,
-  `docker-fedora44-ansible`, `potos-iso-builder-template`
+- Consumer repos: `ansible-collection-potos.base`, `ansible-collection-potos.roles`,
+  `potos-iso-builder`, `docker-fedora44-ansible`, `potos-iso-builder-template`,
+  `shellcheck-jinja`

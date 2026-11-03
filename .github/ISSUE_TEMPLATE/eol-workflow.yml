@@ -16,10 +16,12 @@ body:
       options:
         - release-ansible-collection.yaml
         - release-container.yaml
+        - release-draft-ansible-collection.yaml
         - release-zensical.yaml
         - semantic-release.yaml
         - test-ansible-collection.yaml
         - test-lint.yaml
+        - test-pr-labels.yaml
         - setup-uv (composite action)
         - all-green (composite action)
     validations:
