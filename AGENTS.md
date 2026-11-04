@@ -89,7 +89,7 @@ All work happens on feature branches. Open a PR to `main`; do not manually creat
 | `semantic-release.yaml` | Automate releases with go-semantic-release (also releases this repo) |
 | `test-ansible-collection.yaml` | Full Ansible collection CI (upstream ansible suite + lint + molecule) |
 | `test-lint.yaml` | Lint suite: yamllint, actionlint, zizmor always; ruff, hadolint, shellcheck, shellcheck-jinja opt-in |
-| `test-pr-labels.yaml` | Autolabel a PR from its conventional-commit title and require a release label |
+| `test-pr-labels.yaml` | Autolabel a PR from its conventional-commit title and check title/labels against the release-drafter categories |
 | `smoke-test.yaml` | This repo's CI: smoke tests for the test workflows (required check: `all_green`) |
 | `smoke-test-release.yaml` | This repo's CI: smoke tests for the release workflows |
 

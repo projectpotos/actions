@@ -4,7 +4,7 @@ name: Smoke Test Workflows
 on:
   pull_request:
     branches: [main]
-    types: [opened, reopened, synchronize, labeled, unlabeled]
+    types: [opened, reopened, synchronize, edited, labeled, unlabeled]
   workflow_dispatch:
 
 permissions: {}

@@ -2,8 +2,9 @@
 
 Labels a pull request from its [Conventional Commits](https://www.conventionalcommits.org/)
 title with the [release-drafter](https://github.com/release-drafter/release-drafter)
-autolabeler and fails the check unless the pull request carries one of the labels the
-collection changelog ([Draft Release](ansible/draft-release.md)) is generated from.
+autolabeler, then runs release-drafter's `check-pr` action, which fails unless the title or
+the labels match one of the categories in `.github/release-drafter.yml`. The labels are
+what the collection changelog ([Draft Release](ansible/draft-release.md)) is generated from.
 
 | Title prefix | Label | Version bump |
 |---|---|---|
@@ -13,13 +14,16 @@ collection changelog ([Draft Release](ansible/draft-release.md)) is generated fr
 | `<type>!:` | `major` | major |
 | `chore:`, `ci:`, `test:`, `build:`, `docs:` | `skip-changelog` | none, hidden from the notes |
 
-Pull requests from forks run with a read-only token, so the autolabeler cannot label them;
-a maintainer adds the label by hand.
+The categories match on the title *or* the label, so the check passes in the same run that
+adds the labels, and a hand-labelled pull request passes without a conventional title. Pull
+requests from forks run with a read-only token, so the autolabeler cannot label them; a
+maintainer adds the label by hand. With `sync-labels: true` an edited title replaces the
+labels the autolabeler manages.
 
 ## Usage
 
 Create a `.github/workflows/pr-labels.yaml` file and a `.github/release-drafter.yml`
-config (copy the one in this repository):
+config (copy the one in this repository).
 
 ```yaml title=".github/workflows/pr-labels.yaml"
 ---
@@ -27,7 +31,7 @@ name: PR labels
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, labeled, unlabeled]
+    types: [opened, reopened, synchronize, edited, labeled, unlabeled]
 
 permissions: {} # (1)
 
@@ -44,7 +48,4 @@ jobs:
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|---|---|---|---|
-| `valid-labels` | Comma-separated labels of which at least one must be present | No | `bug, enhancement, feature, refactoring, major, deprecated, skip-changelog` |
-| `invalid-labels` | Comma-separated labels none of which may be present | No | `help wanted, invalid, feedback-needed, incomplete` |
+None.

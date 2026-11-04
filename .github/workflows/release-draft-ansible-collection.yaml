@@ -97,8 +97,8 @@ jobs:
       - name: Draft the GitHub release and resolve the version
         id: release-drafter
         uses: release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Generate the changelog and bump galaxy.yml
         env:
