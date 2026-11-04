@@ -26,12 +26,14 @@ docs/
     ansible/
       index.md          # Ansible category landing page
       test.md           # test-ansible-collection.yaml docs
+      draft-release.md  # release-draft-ansible-collection.yaml docs
       release.md        # release-ansible-collection.yaml docs
     container/
       index.md          # Container category landing page
       release.md        # release-container.yaml docs
     lint.md             # test-lint.yaml docs
     zensical.md         # release-zensical.yaml docs
+    pr-labels.md        # test-pr-labels.yaml docs
     semantic-release.md # semantic-release.yaml docs
   actions/
     index.md            # Composite actions landing page
