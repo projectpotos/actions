@@ -113,7 +113,7 @@ Composite actions: `setup-uv` (checkout + uv), `all-green` (required-check aggre
 Smoke-test exceptions:
 
 - `test-ansible-collection.yaml` cannot be smoke-tested in this repository: the upstream
-  `ansible/ansible-content-actions` workflows it calls (changelog, build-import, ansible-lint,
+  `ansible/ansible-content-actions` workflows it calls (build-import, ansible-lint,
   sanity, unit) operate on the caller's repository root and take no path input, so they
   cannot be pointed at the `tests/ansible/` fixture. The workflow is exercised by every
   collection repository's CI instead. (`release-ansible-collection.yaml` *is* smoke-tested
