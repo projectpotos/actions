@@ -25,7 +25,7 @@ jobs:
       packages: write # declared by release-container.yaml for pushing to GHCR (gated on non-PR events)
       id-token: write # declared by release-container.yaml for keyless provenance signing (gated on non-PR events)
       attestations: write # declared by release-container.yaml for the provenance attestation (gated on non-PR events)
-    uses: ./.github/workflows/release-container.yaml
+    uses: $/.github/workflows/release-container.yaml
     with:
       context: tests/container
       tags: |
@@ -36,7 +36,7 @@ jobs:
   smoke-release-ansible-collection:
     permissions:
       contents: read
-    uses: ./.github/workflows/release-ansible-collection.yaml
+    uses: $/.github/workflows/release-ansible-collection.yaml
     with:
       path: tests/ansible
       publish: false
@@ -48,6 +48,6 @@ jobs:
       # even though the deploy job is skipped via deploy: false.
       pages: write # declared by release-zensical.yaml for the Pages deployment (skipped here)
       id-token: write # declared by release-zensical.yaml for the Pages OIDC auth (skipped here)
-    uses: ./.github/workflows/release-zensical.yaml
+    uses: $/.github/workflows/release-zensical.yaml
     with:
       deploy: false
