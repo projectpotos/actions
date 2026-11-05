@@ -40,7 +40,7 @@ create one with `gh release create <tag>` if the tag was pushed by hand.
 Create a `.github/workflows/draft-release.yaml` file and a `.github/release-drafter.yml`
 config (copy the one in this repository).
 
-### "Secrets"
+=== "Secrets"
 
     ```yaml title=".github/workflows/draft-release.yaml"
     ---
@@ -62,7 +62,7 @@ config (copy the one in this repository).
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
     ```
 
-### "OpenBao"
+=== "OpenBao"
 
     ```yaml title=".github/workflows/draft-release.yaml"
     ---
