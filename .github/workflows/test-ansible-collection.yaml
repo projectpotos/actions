@@ -89,7 +89,7 @@ jobs:
   unit-source:
     permissions:
       contents: read
-    uses: ansible-network/github_actions/.github/workflows/unit_source.yml@4678c74a7d712d55e663c88f66eec6d9c3642550 # main / 2026-07-08
+    uses: ansible-network/github_actions/.github/workflows/unit_source.yml@4678c74a7d712d55e663c88f66eec6d9c3642550 # zizmor: ignore[stale-action-refs] main / 2026-07-08
     with:
       matrix_exclude: ${{ inputs.unit-source-matrix-exclude }}
 
@@ -98,7 +98,7 @@ jobs:
     # as this workflow, so the lint suite always matches this version.
     permissions:
       contents: read
-    uses: ./.github/workflows/test-lint.yaml
+    uses: $/.github/workflows/test-lint.yaml
     with:
       ruff: ${{ inputs.ruff }}
       ruff-group: ${{ inputs.ruff-group }}

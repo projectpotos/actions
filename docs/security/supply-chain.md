@@ -150,7 +150,7 @@ Two independent controls restrict where workflow code can come from:
 - [zizmor](https://docs.zizmor.sh/) runs with the **pedantic** persona on this repository
   (via the smoke tests) and must be clean. Suppressions live in `.github/zizmor.yml`, each
   with a documented reason.
-- [actionlint](https://github.com/rhysd/actionlint) validates workflow syntax on every PR.
+- [actionlint](https://github.com/kjanat/actionlint) validates workflow syntax on every PR.
 
 ---
 
