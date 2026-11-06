@@ -203,5 +203,5 @@ zensical serve
 - [tofu-config-potos-github](https://github.com/projectpotos/repo-config-tofu) — manages this
   repo's settings, `allowed_actions`, and required status checks via OpenTofu
 - Consumer repos: `ansible-collection-potos.base`, `ansible-collection-potos.roles`,
-  `potos-iso-builder`, `docker-fedora44-ansible`, `potos-iso-builder-template`,
+  `potos-iso-builder`, `docker-fedora44-ansible`, `docker-fedora45-ansible`, `potos-iso-builder-template`,
   `shellcheck-jinja`

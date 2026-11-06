@@ -66,7 +66,7 @@ jobs:
 | Input | Description | Required | Default |
 |---|---|---|---|
 | `molecule-scenarios` | JSON array of molecule scenarios to run (empty = skip molecule) | No | `[]` |
-| `molecule-distros` | JSON array of distros for the molecule matrix | No | `["fedora44"]` |
+| `molecule-distros` | JSON array of distros for the molecule matrix | No | `["fedora44", "fedora45"]` |
 | `unit-source-matrix-exclude` | JSON `matrix_exclude` for the unit-source job | No | recent python/ansible versions only |
 | `ruff` | Run ruff check + format | No | `true` |
 | `ruff-group` | Optional uv dependency group that provides ruff | No | `""` |

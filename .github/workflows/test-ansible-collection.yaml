@@ -29,7 +29,7 @@ on:
         description: JSON array of distros to run the molecule scenarios against.
         type: string
         required: false
-        default: '["fedora44"]'
+        default: '["fedora44", "fedora45"]'
       ruff:
         description: Run ruff check + format.
         type: boolean
