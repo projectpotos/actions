@@ -19,9 +19,9 @@ jobs:
       pull-requests: write # the autolabeler adds labels to the pull request
     steps:
       - name: Autolabel from the pull request title
-        uses: release-drafter/release-drafter/autolabeler@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
+        uses: release-drafter/release-drafter/autolabeler@d1a19e60e81a7e650d00a7de9277f87e439117ea # v7.11.0
         # Fork pull requests get a read-only token; their labels must be set by hand.
         continue-on-error: true
 
       - name: Check the title and labels against the release-drafter categories
-        uses: release-drafter/release-drafter/check-pr@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
+        uses: release-drafter/release-drafter/check-pr@d1a19e60e81a7e650d00a7de9277f87e439117ea # v7.11.0
