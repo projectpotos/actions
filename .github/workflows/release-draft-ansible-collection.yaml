@@ -108,9 +108,9 @@ jobs:
         run: |
           SINCE_VERSION="$(gh release list --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')"
           export SINCE_VERSION
-          uvx antsibull-changelog==0.36.0 release --version "${VERSION}"
+          uvx antsibull-changelog==0.37.0 release --version "${VERSION}"
           uvx antsichaut==0.4.0
-          uvx antsibull-changelog==0.36.0 generate
+          uvx antsibull-changelog==0.37.0 generate
           uvx pre-commit==4.7.0 run prettier --files CHANGELOG.rst changelogs/changelog.yaml || true
           sed -i -E "s/^version:.*/version: ${VERSION}/" galaxy.yml
 
